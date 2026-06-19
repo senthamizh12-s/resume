@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Student Management System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4">
+
+    <div class="row">
+
+        <!-- FORM -->
+
+        <div class="col-md-4">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h3 class="text-center">
+                        Student Form
+                    </h3>
+
+                    <hr>
+
+                    <div class="mb-3">
+
+                        <label>First Name</label>
+
+                        <input
+                        type="text"
+                        id="fname"
+                        class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Last Name</label>
+
+                        <input
+                        type="text"
+                        id="lname"
+                        class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Age</label>
+
+                        <input
+                        type="number"
+                        id="age"
+                        class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Gender</label>
+                        <br>
+
+                        <input
+                        type="radio"
+                        name="gender"
+                        value="Male">
+                        Male
+
+                        <input
+                        type="radio"
+                        name="gender"
+                        value="Female"
+                        class="ms-3">
+                        Female
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Father Name</label>
+
+                        <input
+                        type="text"
+                        id="father"
+                        class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Mother Name</label>
+
+                        <input
+                        type="text"
+                        id="mother"
+                        class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Course</label>
+
+                        <select
+                        id="course"
+                        class="form-select">
+
+                            <option value="">
+                                Select Course
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <button
+                    class="btn btn-primary w-100"
+                    id="submitBtn"
+                    onclick="saveStudent()">
+
+                        Submit
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+
+        <div class="col-md-8">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h3>
+                        Students List
+                    </h3>
+
+                    <div id="students">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let students = [];
+
+let editIndex = -1;
+
+
+/* COURSES */
+
+let courses = [
+
+    "Java",
+    "Python",
+    "React",
+    "Node JS",
+    "Full Stack"
+
+];
+
+let dropdown =
+document.getElementById("course");
+
+courses.forEach(function(course){
+
+    let option =
+    document.createElement("option");
+
+    option.text = course;
+    option.value = course;
+
+    dropdown.appendChild(option);
+
+});
+
+
+/* VALIDATION */
+
+function validateField(id){
+
+    let field =
+    document.getElementById(id);
+
+    if(field.value.trim() === ""){
+
+        field.classList.add("is-invalid");
+        field.classList.remove("is-valid");
+
+        return false;
+
+    }
+
+    field.classList.remove("is-invalid");
+    field.classList.add("is-valid");
+
+    return true;
+}
+
+
+/* SAVE */
+
+function saveStudent(){
+
+    let valid =
+
+    validateField("fname") &&
+    validateField("lname") &&
+    validateField("age") &&
+    validateField("father") &&
+    validateField("mother");
+
+    if(!valid){
+
+        return;
+
+    }
+
+    let gender =
+    document.querySelector(
+    'input[name="gender"]:checked');
+
+    let selectedGender =
+    gender ? gender.value : "";
+
+    let student = {
+
+        firstName:
+        document.getElementById("fname").value,
+
+        lastName:
+        document.getElementById("lname").value,
+
+        age:
+        document.getElementById("age").value,
+
+        gender:
+        selectedGender,
+
+        father:
+        document.getElementById("father").value,
+
+        mother:
+        document.getElementById("mother").value,
+
+        course:
+        document.getElementById("course").value
+
+    };
+
+
+    if(editIndex === -1){
+
+        students.push(student);
+
+    }
+    else{
+
+        students[editIndex] =
+        student;
+
+        editIndex = -1;
+
+        document.getElementById(
+        "submitBtn").innerText =
+        "Submit";
+
+    }
+
+    displayStudents();
+
+    clearForm();
+
+}
+
+
+/* DISPLAY */
+
+function displayStudents(){
+
+    let container =
+    document.getElementById("students");
+
+    let table = `
+
+    <table class="table table-bordered table-striped">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Course</th>
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+    `;
+
+    students.forEach(function(student,index){
+
+        table += `
+
+        <tr>
+
+            <td>${student.firstName}</td>
+
+            <td>${student.lastName}</td>
+
+            <td>${student.age}</td>
+
+            <td>${student.gender}</td>
+
+            <td>${student.course}</td>
+
+            <td>
+
+                <button
+                class="btn btn-warning btn-sm"
+                onclick="editStudent(${index})">
+
+                    Edit
+
+                </button>
+
+                <button
+                class="btn btn-danger btn-sm"
+                onclick="deleteStudent(${index})">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    table += `
+
+        </tbody>
+
+    </table>
+
+    `;
+
+    container.innerHTML =
+    table;
+
+}
+
+
+/* DELETE */
+
+function deleteStudent(index){
+
+    students.splice(index,1);
+
+    displayStudents();
+
+}
+
+
+/* EDIT */
+
+function editStudent(index){
+
+    let student =
+    students[index];
+
+    document.getElementById("fname").value =
+    student.firstName;
+
+    document.getElementById("lname").value =
+    student.lastName;
+
+    document.getElementById("age").value =
+    student.age;
+
+    document.getElementById("father").value =
+    student.father;
+
+    document.getElementById("mother").value =
+    student.mother;
+
+    document.getElementById("course").value =
+    student.course;
+
+
+    document
+    .querySelectorAll(
+    'input[name="gender"]')
+    .forEach(function(radio){
+
+        radio.checked =
+        radio.value ===
+        student.gender;
+
+    });
+
+    editIndex = index;
+
+    document.getElementById(
+    "submitBtn").innerText =
+    "Update";
+
+}
+
+
+/* CLEAR FORM */
+
+function clearForm(){
+
+    document.getElementById("fname").value = "";
+    document.getElementById("lname").value = "";
+    document.getElementById("age").value = "";
+    document.getElementById("father").value = "";
+    document.getElementById("mother").value = "";
+
+    document.getElementById("course")
+    .selectedIndex = 0;
+
+    document
+    .querySelectorAll(
+    'input[name="gender"]')
+    .forEach(function(radio){
+
+        radio.checked = false;
+
+    });
+
+    document
+    .querySelectorAll(
+    ".form-control,.form-select")
+    .forEach(function(field){
+
+        field.classList.remove(
+        "is-valid",
+        "is-invalid");
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
